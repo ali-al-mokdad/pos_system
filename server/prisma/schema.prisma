@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("CASHIER") // ADMIN | CASHIER
+  isActive     Boolean  @default(true)
+  mustChangePassword Boolean @default(false)
+  maxDiscountPercent Float @default(10)
+  canSeeCost   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sales     Sale[]
+  movements InventoryMovement[]
+  shifts    Shift[]
+  refunds   Refund[]
+}
+
+model Category {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  description  String?
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String?
+  barcode       String   @unique
+  qrCode        String?  @unique
+  sku           String?  @unique
+  categoryId    Int?
+  sellingPrice  Float    @default(0)
+  costPrice     Float    @default(0)
+  stockQuantity Float    @default(0)
+  minimumStock  Float    @default(0)
+  unit          String   @default("PIECE") // PIECE|KG|GRAM|LITER|BOTTLE|BOX|PACK
+  image         String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category  Category?           @relation(fields: [categoryId], references: [id])
+  saleItems SaleItem[]
+  movements InventoryMovement[]
+
+  @@index([name])
+  @@index([categoryId])
+}
+
+model Sale {
+  id             Int      @id @default(autoincrement())
+  receiptNumber  String   @unique
+  userId         Int
+  shiftId        Int?
+  subtotal       Float
+  discount       Float    @default(0)
+  tax            Float    @default(0)
+  total          Float
+  paymentMethod  String   // CASH | CARD | OTHER
+  amountReceived Float    @default(0)
+  changeAmount   Float    @default(0)
+  status         String   @default("COMPLETED") // COMPLETED | REFUNDED | PARTIALLY_REFUNDED
+  createdAt      DateTime @default(now())
+
+  user    User       @relation(fields: [userId], references: [id])
+  shift   Shift?     @relation(fields: [shiftId], references: [id])
+  items   SaleItem[]
+  refunds Refund[]
+
+  @@index([createdAt])
+}
+
+model SaleItem {
+  id             Int   @id @default(autoincrement())
+  saleId         Int
+  productId      Int?
+  productName    String
+  barcode        String?
+  quantity       Float
+  unitPrice      Float
+  costPrice      Float @default(0)
+  discount       Float @default(0)
+  subtotal       Float
+  refundedQty    Float @default(0)
+
+  sale    Sale     @relation(fields: [saleId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+}
+
+model Refund {
+  id        Int      @id @default(autoincrement())
+  saleId    Int
+  userId    Int
+  amount    Float
+  reason    String?
+  items     String   // JSON: [{saleItemId, quantity, amount}]
+  createdAt DateTime @default(now())
+
+  sale Sale @relation(fields: [saleId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model InventoryMovement {
+  id            Int      @id @default(autoincrement())
+  productId     Int
+  type          String   // SALE|RETURN|RESTOCK|ADJUSTMENT|DAMAGE|EXPIRY
+  quantity      Float
+  previousStock Float
+  newStock      Float
+  reason        String?
+  userId        Int?
+  createdAt     DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+  user    User?   @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+}
+
+model Shift {
+  id           Int       @id @default(autoincrement())
+  userId       Int
+  openingCash  Float     @default(0)
+  closingCash  Float?
+  expectedCash Float?
+  difference   Float?
+  note         String?
+  openedAt     DateTime  @default(now())
+  closedAt     DateTime?
+  status       String    @default("OPEN") // OPEN | CLOSED
+
+  user  User   @relation(fields: [userId], references: [id])
+  sales Sale[]
+}
+
+model HeldSale {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  label     String?
+  payload   String   // JSON cart snapshot
+  createdAt DateTime @default(now())
+}
+
+model Gallery {
+  id           Int      @id @default(autoincrement())
+  image        String
+  caption      String?
+  displayOrder Int      @default(0)
+  isVisible    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Counter {
+  name  String @id
+  value Int    @default(0)
+}
+
+model Settings {
+  id             Int      @id @default(1)
+  businessName   String   @default("Market POS")
+  logo           String?
+  address        String?
+  phone          String?
+  email          String?
+  whatsapp       String?
+  currency       String   @default("$")
+  taxEnabled     Boolean  @default(false)
+  taxRate        Float    @default(0)
+  receiptFooter  String   @default("Thank you!")
+  allowNegativeStock Boolean @default(false)
+  printerType    String   @default("NETWORK") // USB | NETWORK | SERIAL | NONE
+  printerName    String?
+  printerIp      String?
+  printerPort    Int      @default(9100)
+  paperWidth     Int      @default(80)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
