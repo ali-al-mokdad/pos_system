@@ -56,7 +56,9 @@ async function main() {
     create: { name: 'receipt', value: 0 },
   });
 
-  const categories = ['Drinks', 'Snacks', 'Dairy', 'Bread', 'Frozen', 'Household'];
+  const categories = [
+    // 'Drinks', 'Snacks', 'Dairy', 'Bread', 'Frozen', 'Household'
+  ];
   const catMap = {};
   for (let i = 0; i < categories.length; i++) {
     const c = await prisma.category.upsert({
@@ -68,16 +70,16 @@ async function main() {
   }
 
   const products = [
-    ['Fresh Milk 1L', '6291234567890', 'SKU-MILK-1L', 'Dairy', 3.0, 2.1, 40, 10, 'LITER'],
-    ['White Bread Loaf', '6291234567891', 'SKU-BRD-500', 'Bread', 1.5, 0.9, 25, 8, 'PIECE'],
-    ['Dark Chocolate 100g', '6291234567892', 'SKU-CHOC-100', 'Snacks', 2.0, 1.2, 60, 15, 'PIECE'],
-    ['Cola Can 330ml', '6291234567893', 'SKU-COLA-330', 'Drinks', 0.9, 0.55, 120, 24, 'BOTTLE'],
-    ['Mineral Water 1.5L', '6291234567894', 'SKU-WTR-15', 'Drinks', 0.75, 0.4, 200, 30, 'BOTTLE'],
-    ['Greek Yogurt 500g', '6291234567895', 'SKU-YOG-500', 'Dairy', 2.75, 1.8, 18, 10, 'PACK'],
-    ['Potato Chips 150g', '6291234567896', 'SKU-CHIP-150', 'Snacks', 1.85, 1.05, 5, 12, 'PACK'],
-    ['Frozen Peas 400g', '6291234567897', 'SKU-PEA-400', 'Frozen', 2.4, 1.5, 0, 6, 'PACK'],
-    ['Dish Soap 750ml', '6291234567898', 'SKU-DISH-750', 'Household', 3.6, 2.2, 32, 8, 'BOTTLE'],
-    ['Bananas', '6291234567899', 'SKU-BAN-KG', 'Snacks', 1.99, 1.2, 45, 10, 'KG'],
+    // ['Fresh Milk 1L', '6291234567890', 'SKU-MILK-1L', 'Dairy', 3.0, 2.1, 40, 10, 'LITER'],
+    // ['White Bread Loaf', '6291234567891', 'SKU-BRD-500', 'Bread', 1.5, 0.9, 25, 8, 'PIECE'],
+    // ['Dark Chocolate 100g', '6291234567892', 'SKU-CHOC-100', 'Snacks', 2.0, 1.2, 60, 15, 'PIECE'],
+    // ['Cola Can 330ml', '6291234567893', 'SKU-COLA-330', 'Drinks', 0.9, 0.55, 120, 24, 'BOTTLE'],
+    // ['Mineral Water 1.5L', '6291234567894', 'SKU-WTR-15', 'Drinks', 0.75, 0.4, 200, 30, 'BOTTLE'],
+    // ['Greek Yogurt 500g', '6291234567895', 'SKU-YOG-500', 'Dairy', 2.75, 1.8, 18, 10, 'PACK'],
+    // ['Potato Chips 150g', '6291234567896', 'SKU-CHIP-150', 'Snacks', 1.85, 1.05, 5, 12, 'PACK'],
+    // ['Frozen Peas 400g', '6291234567897', 'SKU-PEA-400', 'Frozen', 2.4, 1.5, 0, 6, 'PACK'],
+    // ['Dish Soap 750ml', '6291234567898', 'SKU-DISH-750', 'Household', 3.6, 2.2, 32, 8, 'BOTTLE'],
+    // ['Bananas', '6291234567899', 'SKU-BAN-KG', 'Snacks', 1.99, 1.2, 45, 10, 'KG'],
   ];
 
   for (const [name, barcode, sku, cat, sell, cost, stock, min, unit] of products) {

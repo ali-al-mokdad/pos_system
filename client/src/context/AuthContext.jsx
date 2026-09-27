@@ -73,7 +73,11 @@ export function useAuth() {
   return ctx;
 }
 
+function formatWithCommas(num) {
+  return Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 export function useMoney() {
   const { currency } = useAuth();
-  return (n) => `${currency}${Number(n || 0).toFixed(2)}`;
+  return (n) => `${currency}${formatWithCommas(n)}`;
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Modal from './Modal';
 import { useAuth, useMoney } from '../context/AuthContext';
 
-const QUICK = [5, 10, 20, 50, 100];
+const QUICK = [5000, 10000, 20000, 50000, 100000];
 
 export default function PaymentModal({ open, totals, onClose, onConfirm, busy }) {
   const money = useMoney();
